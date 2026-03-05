@@ -1,11 +1,13 @@
 # main.py
+import os
 import firebase_admin
 from firebase_admin import credentials
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # Initialize Firebase Admin SDK first!
-cred = credentials.Certificate("serviceAccountKey.json")
+cert_path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS", "/etc/secrets/serviceAccountKey.json")
+cred = credentials.Certificate(cert_path)
 firebase_admin.initialize_app(cred, {
     'storageBucket': 'netra-ai-433e5.firebasestorage.app',
     'databaseURL': 'https://netra-ai-433e5-default-rtdb.firebaseio.com'
