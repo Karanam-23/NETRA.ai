@@ -1,0 +1,51 @@
+# ================================
+# SECRETS & SENSITIVE FILES
+# ================================
+.env
+.env.*
+serviceAccountKey.json
+*.pem
+*.key
+
+# ================================
+# PYTHON (netra-backend)
+# ================================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+*.log
+output.txt
+
+# ================================
+# NODE / REACT (netra-frontend)
+# ================================
+node_modules/
+dist/
+build/
+*.local
+tsc_output.txt
+
+# ================================
+# FIREBASE
+# ================================
+.firebase/
+firebase-debug.log
+firestore-debug.log
+
+# ================================
+# OS & EDITOR
+# ================================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo

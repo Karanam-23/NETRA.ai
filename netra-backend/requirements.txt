@@ -1,0 +1,28 @@
+# --- FastAPI & Web Layer ---
+fastapi==0.110.0
+uvicorn[standard]==0.29.0
+pydantic==2.6.3
+pydantic-settings==2.2.1
+
+# --- Firebase & GCP ---
+firebase-admin==6.5.0
+
+# --- Background Tasks & External Services ---
+celery==5.3.6
+redis==5.0.3
+twilio==9.0.0
+paho-mqtt==2.0.0
+
+# --- Video Processing & Computer Vision ---
+opencv-python-headless==4.9.0.80
+
+# --- Machine Learning / AI Engine ---
+# Ultralytics natively wraps YOLOv8 and includes ByteTrack algorithms
+ultralytics==8.1.24
+# ONNX Runtime for optimized GPU inference
+onnxruntime-gpu==1.17.1
+# PyTorch for the custom LSTM classifier (Chasing/Struggle)
+torch==2.2.1
+torchvision==0.17.1
+numpy==1.26.4
+scipy==1.12.0

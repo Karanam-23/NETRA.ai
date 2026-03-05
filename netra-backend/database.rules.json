@@ -1,0 +1,15 @@
+{
+    "rules": {
+        "alerts": {
+            "$orgId": {
+                "live": {
+                    ".read": "auth != null && auth.token.orgId === $orgId",
+                    ".write": "auth != null && auth.token.orgId === $orgId && newData.hasChildren() && data.exists()",
+                    "$alertId": {
+                        ".validate": "newData.hasChildren(['status'])"
+                    }
+                }
+            }
+        }
+    }
+}

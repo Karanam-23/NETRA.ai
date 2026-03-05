@@ -1,0 +1,81 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // --- BASIC AUTH HELPERS ---
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function isSuperAdmin() {
+      return isAuthenticated() && request.auth.token.role == 'super_admin';
+    }
+    
+    // --- TENANT & ROLE HELPERS (Relying fully on Custom Claims via JWT) ---
+    function isOrgMember(orgId) {
+      return isAuthenticated() && request.auth.token.orgId == orgId;
+    }
+    function isOrgAdmin(orgId) {
+      return isOrgMember(orgId) && request.auth.token.role == 'org_admin';
+    }
+    function isOperator(orgId) {
+      return isOrgMember(orgId) && request.auth.token.role == 'operator';
+    }
+    function isViewer(orgId) {
+      return isOrgMember(orgId) && request.auth.token.role == 'viewer';
+    }
+
+    // super_admin bypass - complete platform access
+    match /{document=**} {
+      allow read, write: if isSuperAdmin();
+    }
+
+    // --- ORGANIZATIONS ---
+    match /organizations/{orgId} {
+      allow read: if isOrgMember(orgId);
+      allow write: if isOrgAdmin(orgId);
+    }
+    
+    // --- USERS ---
+    match /users/{uid} {
+      // Users can manage their own profile (name, phone)
+      allow read, write: if request.auth.uid == uid;
+      // Note: org_admin reads users via a backend endpoint to ensure safe cross-document lookup
+    }
+
+    // --- CAMERAS ---
+    match /cameras/{orgId}/{cameraId} {
+      // Any member of the org can read the camera list (name, status, location)
+      allow read: if isOrgMember(orgId);
+      // Only org_admin can add/edit/delete cameras
+      allow write: if isOrgAdmin(orgId);
+      
+      // PATTERN for RTSP URLs: Stored in a nested 'secrets' subcollection.
+      // This guarantees the frontend NEVER pulls down plain-text RTSP credentials,
+      // even if an operator lists all cameras. Only the python backend can read this.
+      match /secrets/{secretDoc} {
+        allow read, write: if false; // Deny all clients. Backend Service Account bypasses this.
+      }
+    }
+
+    // --- ZONES ---
+    match /zones/{orgId}/{zoneId} {
+      allow read: if isOrgMember(orgId);
+      allow write: if isOrgAdmin(orgId);
+    }
+
+    // --- INCIDENTS ---
+    match /incidents/{orgId}/{incidentId} {
+      // All org members can view the incident history
+      allow read: if isOrgMember(orgId);
+      
+      // Core Rule: Only the Backend can CREATE completely new incidents or DELETE them.
+      allow create, delete: if false; 
+      
+      // Operators and Admins can UPDATE the incident (acknowledge it, resolve it, add notes)
+      allow update: if (isOperator(orgId) || isOrgAdmin(orgId)) 
+                    // To prevent tampering, they can ONLY modify specific fields:
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                       .hasOnly(['status', 'operatorNote', 'acknowledgedAt', 'resolvedAt', 'resolvedBy', 'responderUid']);
+    }
+  }
+}
