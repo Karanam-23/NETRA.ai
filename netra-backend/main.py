@@ -5,6 +5,7 @@ from firebase_admin import credentials
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+
 # Initialize Firebase Admin SDK first!
 cert_path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS", "/etc/secrets/serviceAccountKey.json")
 cred = credentials.Certificate(cert_path)
@@ -28,11 +29,7 @@ app = FastAPI(
 # CORS Configuration for React Frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",       # Local development
-        "http://localhost:5173",       # Vite dev server
-        "https://app.netra.ai"         # Production dashboard
-    ],
+    allow_origins=["https://netra-ai-kappa.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
