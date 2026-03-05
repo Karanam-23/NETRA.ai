@@ -20,7 +20,7 @@ opencv-python-headless==4.9.0.80
 # Ultralytics natively wraps YOLOv8 and includes ByteTrack algorithms
 ultralytics==8.1.24
 # ONNX Runtime for optimized GPU inference
-onnxruntime==1.17.1
+onnxruntime==1.24.1
 # PyTorch for the custom LSTM classifier (Chasing/Struggle)
 torch==2.2.1
 torchvision==0.17.1
